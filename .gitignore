@@ -18,3 +18,12 @@ htmlcov/
 dist/
 build/
 *.egg-info/
+# pytest cache
+.pytest_cache/
+# coverage reports
+.coverage
+htmlcov/
+# Jupyter notebooks
+*.ipynb
+# Docker artifacts
+*.tar

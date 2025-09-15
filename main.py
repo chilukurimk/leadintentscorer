@@ -1,7 +1,9 @@
 
 from fastapi import FastAPI, UploadFile, File
+
 from pydantic import BaseModel
 from typing import List, Optional
+from scoring import Lead
 
 app = FastAPI()
 
@@ -10,13 +12,7 @@ class Offer(BaseModel):
     value_props: List[str]
     ideal_use_cases: List[str]
 
-class Lead(BaseModel):
-    name: str
-    role: str
-    company: str
-    industry: str
-    location: str
-    linkedin_bio: Optional[str]
+
 
 class ScoredLead(BaseModel):
     name: str
