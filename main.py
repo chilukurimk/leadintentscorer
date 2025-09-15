@@ -43,10 +43,23 @@ def create_offer(offer: Offer):
 
 @app.post("/leads/upload")
 async def upload_leads(file: UploadFile = File(...)):
-    """Accept a CSV file with lead details."""
-    # Placeholder: parse CSV in next step
+    """Accept a CSV file with lead details and parse it into Lead objects."""
+    import pandas as pd
+    from io import StringIO
     leads.clear()
-    return {"message": "Leads file uploaded."}
+    content = await file.read()
+    df = pd.read_csv(StringIO(content.decode()))
+    for _, row in df.iterrows():
+        lead = Lead(
+            name=row.get("name", ""),
+            role=row.get("role", ""),
+            company=row.get("company", ""),
+            industry=row.get("industry", ""),
+            location=row.get("location", ""),
+            linkedin_bio=row.get("linkedin_bio", "")
+        )
+        leads.append(lead)
+    return {"message": f"{len(leads)} leads uploaded.", "count": len(leads)}
 
 @app.post("/score")
 def score_leads():
