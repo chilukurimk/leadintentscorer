@@ -135,3 +135,18 @@ def score_leads():
 def get_results():
     """Return scored leads as JSON array."""
     return results
+
+@app.get("/results/csv")
+def export_results_csv():
+    """Export scored leads as CSV file."""
+    import pandas as pd
+    from fastapi.responses import StreamingResponse
+    if not results:
+        return {"error": "No results to export."}
+    df = pd.DataFrame(results)
+    csv_data = df.to_csv(index=False)
+    return StreamingResponse(
+        iter([csv_data]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=results.csv"}
+    )
