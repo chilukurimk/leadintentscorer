@@ -63,10 +63,38 @@ async def upload_leads(file: UploadFile = File(...)):
 
 @app.post("/score")
 def score_leads():
-    """Run scoring pipeline on uploaded leads."""
-    # Placeholder: implement scoring in next step
+    """Run rule-based scoring on uploaded leads."""
     results.clear()
-    return {"message": "Scoring complete."}
+    if not offers or not leads:
+        return {"error": "No offer or leads uploaded."}
+    offer = offers[-1]  # Use the latest offer
+    icp = set([x.lower() for x in offer.ideal_use_cases])
+    for lead in leads:
+        rule_score = 0
+        # Role relevance
+        role = lead.role.lower()
+        if any(x in role for x in ["head", "chief", "vp", "director", "founder", "owner"]):
+            rule_score += 20  # Decision maker
+        elif any(x in role for x in ["manager", "lead", "influencer"]):
+            rule_score += 10  # Influencer
+        # Industry match
+        industry = lead.industry.lower()
+        if any(x in industry for x in icp):
+            rule_score += 20  # Exact ICP
+        elif any(x in industry for x in ["saas", "software", "tech", "startup"]):
+            rule_score += 10  # Adjacent
+        # Data completeness
+        if all([lead.name, lead.role, lead.company, lead.industry, lead.location, lead.linkedin_bio]):
+            rule_score += 10
+        results.append({
+            "name": lead.name,
+            "role": lead.role,
+            "company": lead.company,
+            "intent": "Pending",
+            "score": rule_score,
+            "reasoning": "Rule-based score only. AI reasoning not yet applied."
+        })
+    return {"message": "Rule-based scoring complete.", "count": len(results)}
 
 @app.get("/results")
 def get_results():
