@@ -1,5 +1,10 @@
 # Lead Intent Scorer API
 
+## Live API Base URL
+
+https://leadintentscorer-api.onrender.com
+# Lead Intent Scorer API
+
 ## Setup Steps
 
 1. **Clone the repository**
